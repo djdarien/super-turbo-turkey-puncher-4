@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #fff;
+    background-color: #e81212;
   }
   
   #main-menu, #pause-menu, #high-score {
@@ -21,7 +21,7 @@ body {
   #gameCanvas {
     display: block;
     margin: 0 auto;
-    background-color: #000;
+    background-color: #ffffff;
     cursor: none;
     position: relative;
   }
