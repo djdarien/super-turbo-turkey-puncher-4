@@ -5,10 +5,10 @@ Welcome to the ultimate turkey punching experience! Inspired by the beloved mini
 In this rendition, you aim to punch as many Thanksgiving turkeys as you can. With special turkeys that offer more points and a combo system that rewards rapid successive hits, there are endless opportunities to maximize your score. Get immersed in the engaging graphics and background music, and make sure to keep an ear out for the iconic gobble and punch sounds!
 
 
-How to Play:
+##How to Play:
 
 
-Starting the Game
+# Starting the Game
 
 Click "Start Game" on the main menu to begin.
 
@@ -16,7 +16,7 @@ The game screen will appear, and turkeys will start spawning.
 
 
 
-Punching Turkeys
+# Punching Turkeys
 
 Move your mouse to position the fist over a turkey.
 
@@ -32,7 +32,7 @@ Normal turkey: 100 points
 
 
 
-Game Controls
+# Game Controls
 
 Pause: Click the "Pause" button at the top right of the screen.
 
@@ -48,7 +48,7 @@ Confirm your high score when prompted, then return to the main menu.
 
 
 
-High Scores
+# High Scores
 
 Check the top scores by clicking the "High Scores" button on the main menu.
 
@@ -56,7 +56,7 @@ Compare your scores against past attempts and see if you can beat your best!
 
 
 
-Controls Summary
+# Controls Summary
 
 Mouse Movement: Move the fist
 
