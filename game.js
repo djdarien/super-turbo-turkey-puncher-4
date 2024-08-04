@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     bgImg.src = 'background.png'; // Path to the background image
 
     let gobbleSound = new Audio('gobble.mp3'); // Path to the gobble sound
+    let punchSound = new Audio('punch.mp3'); // punching sound 
     let welcomeMessage = new Audio('welcome_message.mp3'); // Path to the welcome message
     let bgMusic = new Audio('background_music.mp3'); // Path to the background music
     bgMusic.loop = true; // Ensure the music loops continuously
@@ -71,6 +72,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     };
 
     function spawnTurkey() {
+        gobbleSound.play();
         let turkey = {
             x: Math.random() * (canvas.width - 64),
             y: Math.random() * (canvas.height - 64),
@@ -89,7 +91,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 fist.y + fist.height > turkey.y
             ) {
                 turkeys.splice(index, 1);
-                gobbleSound.play();
+                punchSound.play();
                 score += 100;
                 spawnTurkey();
             }
