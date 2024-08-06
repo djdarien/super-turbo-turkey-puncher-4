@@ -1,37 +1,32 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Super Turbo Turkey Puncher 4</title>
-      <link rel="stylesheet" href="styles.css">
-    </head>
-    <style>
-        body {
-          background-image: url('background_main.jpeg');
-        }
-        </style>
-    <body>
-      <div id="main-menu">
-        <img src="logo.png" alt="Super Turbo Turkey Puncher 4">
-        <button onclick="startGame()">Start Game</button>
-        <button onclick="showHighScores()">High Scores</button>
-      </div>
-      
-      <canvas id="gameCanvas" style="display: none;"></canvas>
-      
-      <div id="pause-menu" style="display: none;">
-        <h2>Game Paused</h2>
-        <button onclick="resumeGame()">Resume</button>
-        <button onclick="returnToMainMenu()">Return to Main Menu</button>
-      </div>
-    
-      <div id="high-score" style="display: none;">
-        <h2>High Scores</h2>
-        <ol id="high-score-list"></ol>
-        <button onclick="returnToMainMenu()">Back</button>
-      </div>
-    
-      <script src="game.js"></script>
-    </body>
-    </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Turbo Turkey Puncher Four</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="main-menu">
+    <img src="logo.png" alt="Super Turbo Turkey Puncher 4">
+    <button onclick="startGame()">Start Game</button>
+    <button onclick="showHighScores()">High Scores</button>
+  </div>
+  
+  <canvas id="gameCanvas" style="display: none;"></canvas>
+  
+  <div id="pause-menu" style="display: none;">
+    <h2>Game Paused</h2>
+    <button onclick="resumeGame()">Resume</button>
+    <button onclick="returnToMainMenu()">Return to Main Menu</button>
+  </div>
+
+  <div id="high-score" style="display: none;">
+    <h2>High Scores</h2>
+    <ol id="high-score-list"></ol>
+    <button onclick="returnToMainMenu()">Back</button>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
