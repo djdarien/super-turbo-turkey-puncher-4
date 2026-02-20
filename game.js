@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     // Sound Effects for Power-Ups
     let powerupSpawnSound = new Audio('powerup_spawn.mp3'); // Sound played when a power-up spawns
     let powerupPickupSound = new Audio('powerup_pickup.mp3'); // Sound played when a power-up is collected
+    let comboEndSound = new Audio('combo_end.mp3'); // Sound played when combo ends
 
     // Play welcome message once the document is fully loaded and interacted with
     document.addEventListener('click', () => {
@@ -44,8 +45,12 @@ document.addEventListener('DOMContentLoaded', (event) => {
     let score = 0;
     let comboCount = 0;
     let comboTimer;
+    let comboStartTime;
     let currentLevel = 1;
     const comboDuration = 3000; // Combo duration in milliseconds
+    let gameSpeed = 1; // New variable for game speed
+    let speedEffectTimer; // Timer for speed effects
+    let screenShake = 0;
 
     const powerUpTypes = Object.keys(powerUpImages);
     const powerUps = [];
@@ -102,7 +107,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
             x: Math.random() * (canvas.width - 64),
             y: Math.random() * (canvas.height - 64),
             width: 64,
-            height: 64
+            height: 64,
+            dx: (Math.random() - 0.5) * 2,
+            dy: (Math.random() - 0.5) * 2,
+            scale: 1
         };
         turkeys.push(turkey);
     }
@@ -136,14 +144,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 score += 100;
                 updateCombo();
                 spawnTurkey();
+                screenShake = 10;
             }
         });
     }
 
     function updateCombo() {
         comboCount++;
+        comboStartTime = Date.now();
         clearTimeout(comboTimer);
-        comboTimer = setTimeout(() => comboCount = 0, comboDuration);
+        comboTimer = setTimeout(() => {
+            comboCount = 0;
+            comboEndSound.play();
+        }, comboDuration);
         score += comboCount * 10; // Increase the score based on the combo count
     }
 
@@ -152,9 +165,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
         if (powerUp.type === 'extraPoints') {
             score += 500;
         } else if (powerUp.type === 'slowTime') {
-            // Implement slow time logic (not implemented in this code)
+            gameSpeed = 0.5;
+            clearTimeout(speedEffectTimer);
+            speedEffectTimer = setTimeout(() => gameSpeed = 1, 5000);
         } else if (powerUp.type === 'fastTime') {
-            // Implement fast time logic (not implemented in this code)
+            gameSpeed = 1.5;
+            clearTimeout(speedEffectTimer);
+            speedEffectTimer = setTimeout(() => gameSpeed = 1, 5000);
         }
     }
 
@@ -215,20 +232,38 @@ document.addEventListener('DOMContentLoaded', (event) => {
       updateHighScoreList();
     }
 
-    function render() {
+function render() {
+        if (screenShake > 0) {
+            ctx.save();
+            ctx.translate(Math.random() * screenShake - screenShake / 2, Math.random() * screenShake - screenShake / 2);
+            screenShake--;
+        }
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Draw the background
         ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
 
-        // Draw the turkeys
+        // Update and draw the turkeys
         turkeys.forEach(turkey => {
+            turkey.x += turkey.dx * gameSpeed;
+            turkey.y += turkey.dy * gameSpeed;
+
+            if (turkey.x <= 0 || turkey.x + turkey.width >= canvas.width) {
+                turkey.dx = -turkey.dx;
+            }
+            if (turkey.y <= 0 || turkey.y + turkey.height >= canvas.height) {
+                turkey.dy = -turkey.dy;
+            }
+
             ctx.drawImage(turkeyImg, turkey.x, turkey.y, turkey.width, turkey.height);
         });
 
         // Draw power-ups
         powerUps.forEach(powerUp => {
-            ctx.drawImage(powerUpImages[powerUp.type], powerUp.x, powerUp.y, powerUp.width, powerUp.height);
+            const pulse = Math.sin(Date.now() * 0.005) * 0.1 + 1;
+            const size = powerUp.width * pulse;
+            ctx.drawImage(powerUpImages[powerUp.type], powerUp.x, powerUp.y, size, size);
         });
 
         // Draw the fist following the mouse
@@ -243,6 +278,24 @@ document.addEventListener('DOMContentLoaded', (event) => {
         // Display the combo counter
         if (comboCount > 1) {
             ctx.fillText('Combo: ' + comboCount, 10, 90);
+            // Draw combo timer bar
+            const barWidth = 200;
+            const barHeight = 10;
+            const timeLeft = (comboDuration - (Date.now() - comboStartTime)) / comboDuration;
+            ctx.fillStyle = 'red';
+            ctx.fillRect(10, 100, barWidth * timeLeft, barHeight);
+            ctx.strokeStyle = 'white';
+            ctx.strokeRect(10, 100, barWidth, barHeight);
+        }
+
+        // Display the current speed effect
+        if (gameSpeed !== 1) {
+            ctx.fillStyle = 'yellow';
+            ctx.fillText(gameSpeed > 1 ? 'FAST TIME' : 'SLOW TIME', 10, 120);
+        }
+
+        if (screenShake > 0) {
+            ctx.restore();
         }
 
         requestAnimationFrame(render);
