@@ -2,30 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Super Turbo Turkey Puncher Four</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Super Turbo Turkey Puncher 4</title>
+  <meta name="description" content="Punch turkeys. Build combos. Beat high scores. Classic Doom mini-game reborn.">
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="main-menu">
-    <img src="logo.png" alt="Super Turbo Turkey Puncher 4">
-    <button onclick="startGame()">Start Game</button>
-    <button onclick="showHighScores()">High Scores</button>
+    <img src="logo.png" alt="Super Turbo Turkey Puncher 4" class="logo">
+    <p class="tagline">PUNCH THE TURKEY</p>
+    <button id="start-btn">Start Game</button>
+    <button id="scores-btn">High Scores</button>
   </div>
   
-  <canvas id="gameCanvas" style="display: none;"></canvas>
+  <canvas id="gameCanvas"></canvas>
   
-  <div id="pause-menu" style="display: none;">
-    <h2>Game Paused</h2>
-    <button onclick="resumeGame()">Resume</button>
-    <button onclick="returnToMainMenu()">Return to Main Menu</button>
+  <div id="hud">
+    <div id="score-display">Score: 0</div>
+    <div id="combo-display"></div>
+    <div id="level-display">Level 1</div>
   </div>
 
-  <div id="high-score" style="display: none;">
+  <div id="pause-menu" class="overlay">
+    <h2>Paused</h2>
+    <button id="resume-btn">Resume</button>
+    <button id="menu-btn">Main Menu</button>
+  </div>
+
+  <div id="high-score" class="overlay">
     <h2>High Scores</h2>
     <ol id="high-score-list"></ol>
-    <button onclick="returnToMainMenu()">Back</button>
+    <button id="back-btn">Back</button>
+  </div>
+
+  <div id="game-over" class="overlay">
+    <h2>Game Over</h2>
+    <p id="final-score"></p>
+    <button id="restart-btn">Play Again</button>
+    <button id="menu-btn2">Main Menu</button>
   </div>
 
   <script src="game.js"></script>
