@@ -1,0 +1,6 @@
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#1a0c08 linear-gradient(#2a1018,#5a2410 60%,#1a0c08);color:#f6e0b0;font-family:monospace;text-align:center}
+main{max-width:560px;padding:2rem;background:rgba(0,0,0,.55);border:3px solid #e07a20;border-radius:6px}
+h1{color:#f4a030;text-shadow:3px 3px 0 #401008;font-size:1.8rem}
+.price{font-size:1.1rem}
+button{font:inherit;font-size:1.2rem;padding:14px 32px;background:#d0501c;color:#fff;border:3px solid #fff;border-radius:4px;cursor:pointer}
+.small{font-size:.8rem;opacity:.85}a{color:#ffcc66}

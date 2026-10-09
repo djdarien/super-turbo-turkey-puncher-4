@@ -122,3 +122,17 @@ button:hover, button:active {
   margin-top: 4px;
   color: #f55;
 }
+
+.banner {
+  max-width: 80%;
+  width: 520px;
+  image-rendering: pixelated;
+}
+
+.quip {
+  color: #ffd27a;
+  font-size: 0.7rem;
+  text-align: center;
+  max-width: 90%;
+  line-height: 1.6;
+}

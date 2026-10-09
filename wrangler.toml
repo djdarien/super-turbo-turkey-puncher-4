@@ -1,0 +1,14 @@
+name = "super-turbo-turkey-puncher-4"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+# Route EVERY request through the worker so the game is never served without the access check.
+run_worker_first = true
+
+[vars]
+MIN_PRICE_CENTS = "100"
+# Secrets (set with `wrangler secret put`, never commit):
+#   STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_ID, ACCESS_TOKEN_SECRET

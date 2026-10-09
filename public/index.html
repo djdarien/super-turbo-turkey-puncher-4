@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Turbo Turkey Puncher 4 – Play</title>
+  <meta name="description" content="A gritty retro autumn arcade brawler. Pay what you want ($1 minimum) and play in your browser.">
+  <link rel="stylesheet" href="/landing.css">
+</head>
+<body>
+  <main>
+    <h1>Super Turbo Turkey Puncher 4</h1>
+    <p>Punch turkeys. Chain combos. Grab acorns, pies and pumpkins. Don't let them escape.</p>
+    <p class="price">Pay what you want &mdash; <strong>$1 minimum</strong> &mdash; then play instantly in your browser.</p>
+    <form method="POST" action="/checkout"><button type="submit">Pay &amp; Play</button></form>
+    <p class="small">Already paid? You'll stay unlocked in this browser for a year. On a new device, open the link from your Stripe receipt or contact the developer.</p>
+    <p class="small" id="locked" hidden>Payment required to play.</p>
+    <p class="small"><a target="_blank" rel="noopener" href="https://www.paypal.com/paypalme/djdarien">Optional: leave an extra tip via PayPal</a></p>
+    <p class="small">Secure checkout by Stripe.</p>
+  </main>
+  <script>if (location.search.includes('locked')) document.getElementById('locked').hidden = false;</script>
+</body>
+</html>

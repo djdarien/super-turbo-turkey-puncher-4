@@ -14,7 +14,8 @@
   const powerImgs = {
     extraPoints: Object.assign(new Image(), {src: 'extrapoints.png'}),
     slowTime: Object.assign(new Image(), {src: 'slowtime.png'}),
-    fastTime: Object.assign(new Image(), {src: 'fasttime.png'})
+    fastTime: Object.assign(new Image(), {src: 'fasttime.png'}),
+    gravy: Object.assign(new Image(), {src: 'gravy.png'})
   };
 
   // Audio (graceful fail)
@@ -61,7 +62,18 @@
       return [];
     }
   }
-  const POWER_TYPES = ['extraPoints', 'slowTime', 'fastTime'];
+  const POWER_TYPES = ['extraPoints', 'slowTime', 'fastTime', 'extraPoints', 'gravy'];
+  const POWER_NAMES = {extraPoints: 'PUMPKIN PIE!', slowTime: 'STUFFING... SO FULL', fastTime: 'CRANBERRY RUSH!', gravy: 'GRAVY BOAT! +1 LIFE'};
+  const MAX_LIVES = 5;
+  let floaters = [];
+  const GAME_OVER_LINES = [
+    'The turkeys gobbled their way to freedom!',
+    'Gobble gobble... game over!',
+    'Too stuffed to keep punching.',
+    'The feast is cancelled! Try again?',
+    'Those birds flew the coop!',
+    'No leftovers for you this year.'
+  ];
 
   function resize() {
     canvas.width = window.innerWidth;
@@ -181,12 +193,15 @@
   }
 
   function applyPower(type) {
+    floaters.push({text: POWER_NAMES[type] || '', x: fist.x, y: fist.y, life: 1.4});
     if (type === 'extraPoints') {
       score += 400 + level * 50;
       spawnParticles(fist.x, fist.y, 20);
     } else if (type === 'slowTime') {
       gameSpeed = 0.45;
       speedTimer = 5000;
+    } else if (type === 'gravy') {
+      lives = Math.min(MAX_LIVES, lives + 1);
     } else if (type === 'fastTime') {
       gameSpeed = 1.6;
       speedTimer = 4000;
@@ -260,6 +275,12 @@
       if (p.life <= 0) particles.splice(i, 1);
     }
 
+    for (let i = floaters.length - 1; i >= 0; i--) {
+      floaters[i].y -= 0.6 * (dt / 16);
+      floaters[i].life -= dt / 1000;
+      if (floaters[i].life <= 0) floaters.splice(i, 1);
+    }
+
     if (shake > 0) shake *= Math.pow(0.85, dt / 16);
 
     // HUD
@@ -329,6 +350,17 @@
     });
     ctx.globalAlpha = 1;
 
+    // Power-up name pop-ups
+    ctx.font = '14px "Press Start 2P"';
+    floaters.forEach(f => {
+      ctx.globalAlpha = Math.min(1, f.life);
+      ctx.fillStyle = '#000';
+      ctx.fillText(f.text, f.x + 2, f.y + 2);
+      ctx.fillStyle = '#ffd27a';
+      ctx.fillText(f.text, f.x, f.y);
+    });
+    ctx.globalAlpha = 1;
+
     // Fist
     if (fistImg.complete) {
       ctx.drawImage(fistImg, fist.x, fist.y, fist.w, fist.h);
@@ -341,7 +373,7 @@
     if (gameSpeed !== 1) {
       ctx.fillStyle = gameSpeed > 1 ? '#ff0' : '#0ff';
       ctx.font = '16px "Press Start 2P"';
-      ctx.fillText(gameSpeed > 1 ? 'FAST!' : 'SLOW', canvas.width - 100, 30);
+      ctx.fillText(gameSpeed > 1 ? 'CRANBERRY RUSH' : 'STUFFED (SLOW)', canvas.width - 260, 30);
     }
 
     ctx.restore();
@@ -365,6 +397,7 @@
     turkeys = [];
     powerUps = [];
     particles = [];
+    floaters = [];
     score = 0;
     combo = 0;
     level = 1;
@@ -417,6 +450,7 @@
     hud.style.display = 'none';
     saveScore(score);
     document.getElementById('final-score').textContent = 'Final Score: ' + score;
+    document.getElementById('gameover-quip').textContent = GAME_OVER_LINES[Math.floor(Math.random() * GAME_OVER_LINES.length)];
     document.getElementById('game-over').style.display = 'flex';
   }
 

@@ -1,7 +1,7 @@
 # Procedural autumn pixel art for Super Turbo Turkey Puncher 4. Run from repo root: python3 tools/art.py
 import math,random
 from PIL import Image,ImageDraw,ImageFont
-O='./'
+O='public/play/'
 B4=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]]
 def lerp(a,b,t): return tuple(int(a[i]+(b[i]-a[i])*t) for i in range(3))
 def dith(x,y,t,c1,c2): return c2 if t*16>B4[y%4][x%4]+.5 else c1
@@ -27,6 +27,28 @@ WOOD=[(30,16,12),(58,30,18),(88,46,24),(120,66,34)]
 RED=[(40,10,12),(84,20,20),(128,34,26),(160,52,34)]
 HAY=[(70,46,16),(130,92,30),(190,146,54),(232,196,96)]
 PUMP=[(70,22,8),(150,56,14),(214,102,22),(244,156,44),(252,206,110)]
+def feast(im,px,d,W,H,title):
+    # harvest table with cornucopia, pie and drumsticks (bottom right)
+    tw=int(W*(.34 if title else .42));tx=W-tw-int(W*.03);ty=H-int(H*(.16 if not title else .2))
+    for y in range(ty,H):
+        for x in range(tx,tx+tw):
+            px[x,y]=ramp(WOOD,.75-(y-ty)/(H-ty)*.6+((x-tx)%12==0)*-.3,x,y)+(255,)
+    for x in range(tx,tx+tw):
+        for y in range(ty,ty+3): px[x,y]=(214,190,150,255) if (x//3+y)%2 else (190,60,40,255)  # checked cloth edge
+    r=max(4,int(H*.05));cx=tx+int(tw*.28);cy=ty-r+1
+    # cornucopia horn: tapering curved cone
+    for i in range(40):
+        t=i/39;hx=cx-int(r*2.2*t);hy=cy-int(r*1.0*math.sin(t*2.6));rr=max(1,int(r*(1-t*.85)))
+        shade_ellipse(px,hx,hy,rr,rr,[(70,40,14),(130,84,30),(190,136,60),(230,186,110)],W,H)
+    for (ox,oy,c) in [(r*.9,-r*.2,PUMP),(r*1.6,r*.25,[(60,10,30),(120,20,60),(170,50,100)]),(r*.7,r*.5,[(90,10,10),(170,30,24),(220,70,50)]),(r*1.9,-r*.4,[(60,80,10),(110,140,30),(170,190,70)])]:
+        shade_ellipse(px,cx+ox,cy+oy,r*.45,r*.4,c,W,H)
+    # pie
+    px_=tx+int(tw*.62);shade_ellipse(px,px_,ty-1,r*.9,r*.35,[(120,60,20),(190,110,40),(236,170,80)],W,H)
+    shade_ellipse(px,px_,ty-2,r*.75,r*.25,[(150,70,20),(200,104,30)],W,H)
+    # drumsticks
+    for k in range(2):
+        dx_=tx+int(tw*(.82+k*.08));shade_ellipse(px,dx_,ty-2,r*.35,r*.5,[(80,36,14),(150,80,30),(200,130,60)],W,H)
+        d.line([dx_,ty-2-int(r*.5),dx_+1,ty-2-int(r*.9)],fill=(240,230,210,255))
 def scene(W,H,seed,title=False):
     random.seed(seed);im=Image.new('RGBA',(W,H));px=im.load();d=ImageDraw.Draw(im)
     hz=int(H*.62)
@@ -95,6 +117,7 @@ def scene(W,H,seed,title=False):
         d.line([cx,cy-r,cx+1,cy-r-2],fill=(60,80,20,255),width=1)
     for _ in range(W//5):
         x,y=random.randrange(W-1),random.randrange(H);px[x,y]=random.choice(LEAF[1:])+(255,);px[x+1,y]=LEAF[0]+(255,)
+    feast(im,px,d,W,H,title)
     for y in range(H):
         for x in range(W):
             v=((x/W-.5)**2+(y/H-.5)**2)*2.2
@@ -129,6 +152,12 @@ def turkey():
     for lx in (25,34):
         for y in range(54,60): px[lx,y]=(214,140,40,255)
         d.line([lx-2,60,lx+2,60],fill=(214,140,40,255))
+    # pilgrim hat
+    d.rectangle([40,14,56,15],fill=(24,20,22,255))
+    for y in range(3,14):
+        for x in range(43+(y<6),54-(y<6)): px[x,y]=ramp([(20,18,20),(44,40,44),(70,64,70)],.2+(x-43)/22+(y<5)*.2,x,y)+(255,)
+    d.rectangle([43,10,53,12],fill=(110,70,40,255))
+    d.rectangle([46,9,50,13],outline=(240,200,80,255))
     outline(im);up(im,5).save(O+'turkey.png')
 turkey()
 def fist():
@@ -155,7 +184,7 @@ def fist():
 fist()
 def chip(path,N,k,kind):
     im=Image.new('RGBA',(N,N),(0,0,0,0));px=im.load();d=ImageDraw.Draw(im);c=N/2;s=N/36
-    ring={'acorn':[(60,40,10),(170,130,40),(250,220,120)],'pumpkin':[(70,20,10),(200,90,20),(255,190,90)],'pie':[(40,30,60),(110,140,200),(220,240,255)]}[kind]
+    ring={'stuffing':[(50,30,10),(150,110,50),(230,200,130)],'cranberry':[(50,10,20),(170,30,60),(255,140,160)],'gravy':[(40,24,10),(160,120,60),(250,230,170)],'acorn':[(60,40,10),(170,130,40),(250,220,120)],'pumpkin':[(70,20,10),(200,90,20),(255,190,90)],'pie':[(40,30,60),(110,140,200),(220,240,255)]}[kind]
     for y in range(N):
         for x in range(N):
             dd=((x-c+.5)**2+(y-c+.5)**2)**.5
@@ -170,6 +199,20 @@ def chip(path,N,k,kind):
     elif kind=='pumpkin':
         for kx in (-1,1,0): shade_ellipse(px,c+kx*5*s,c+2*s,6*s,9*s,PUMP,N,N)
         d.rectangle([c-1,c-10*s,c+1,c-6*s],fill=(60,90,20,255))
+    elif kind=='stuffing':
+        shade_ellipse(px,c,c+4*s,11*s,6*s,[(40,40,60),(90,100,130),(170,180,200),(230,235,240)],N,N)
+        for _ in range(int(40*s*s)):
+            x=int(c+random.uniform(-9,9)*s);y=int(c+random.uniform(-6,2)*s)
+            px[x,y]=random.choice([(120,76,30),(176,120,50),(220,170,90),(80,120,30)])+(255,)
+    elif kind=='cranberry':
+        for (ox,oy) in [(-4,2),(4,2),(0,-4),(-1,5),(5,-3),(-5,-3)]:
+            shade_ellipse(px,c+ox*s,c+oy*s,4*s,4*s,[(60,4,20),(150,16,40),(220,50,80),(255,170,180)],N,N)
+        d.line([c,c-8*s,c+3*s,c-12*s],fill=(70,100,30,255));px[int(c+3*s),int(c-12*s)]=(110,160,50,255)
+    elif kind=='gravy':
+        shade_ellipse(px,c,c+3*s,10*s,6*s,[(60,60,70),(140,140,150),(210,210,220),(250,250,255)],N,N)
+        shade_ellipse(px,c,c,9*s,2.5*s,[(90,50,20),(140,84,36),(170,110,50)],N,N)
+        d.polygon([(c+9*s,c),(c+14*s,c-3*s),(c+9*s,c+3*s)],fill=(200,200,210,255))
+        d.arc([c-14*s,c-3*s,c-6*s,c+7*s],90,270,fill=(200,200,210,255),width=max(1,int(s*1.5)))
     else:
         for y in range(N):
             for x in range(N):
@@ -178,9 +221,10 @@ def chip(path,N,k,kind):
                     px[x,y]=ramp([(140,70,20),(200,120,40),(240,180,90)],1-(Y+4*s)/(12*s),x,y)+(255,)
         shade_ellipse(px,c-3*s,c-5*s,4*s,2.5*s,[(220,220,210),(255,250,240)],N,N)
     outline(im);up(im,k).save(path)
-chip(O+'extrapoints.png',36,10,'acorn')
-chip(O+'slowtime.png',32,16,'pie')
-chip(O+'fasttime.png',36,10,'pumpkin')
+chip(O+'extrapoints.png',36,10,'pie')        # Pumpkin Pie: bonus points
+chip(O+'slowtime.png',32,16,'stuffing')      # Stuffing: slow time
+chip(O+'fasttime.png',36,10,'cranberry')     # Cranberry: fast time
+chip(O+'gravy.png',36,10,'gravy')            # Gravy Boat: extra life
 def logo():
     W,H=158,58;im=Image.new('RGBA',(W,H),(0,0,0,0));px=im.load()
     F=lambda sz:ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',sz)
@@ -201,3 +245,19 @@ def logo():
                 if abs(dx)+abs(dy)<=2: px[x+dx,y+dy]=LEAF[2+((dx+dy)%2)]+(255,)
     outline(im,(24,10,8,255));up(im,4).crop((0,0,629,232)).save(O+'logo.png')
 logo()
+
+def banner():
+    W,H=170,26;im=Image.new('RGBA',(W,H),(0,0,0,0));px=im.load();d=ImageDraw.Draw(im)
+    d.polygon([(0,6),(14,6),(14,22),(0,22),(6,14)],fill=(120,30,20,255));d.polygon([(W-1,6),(W-15,6),(W-15,22),(W-1,22),(W-7,14)],fill=(120,30,20,255))
+    for y in range(3,20):
+        for x in range(10,W-10): px[x,y]=ramp([(120,30,20),(170,52,26),(210,84,34)],1-(y-3)/17,x,y)+(255,)
+    for x in range(10,W-10): px[x,3]=(240,190,90,255);px[x,19]=(240,190,90,255)
+    m=Image.new('L',(W,H),0);md=ImageDraw.Draw(m);md.fontmode='1';f=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',11)
+    t='HAPPY THANKSGIVING';x=int((W-md.textlength(t,font=f))/2);md.text((x,4),t,font=f,fill=255);mp=m.load()
+    for y in range(H):
+        for x in range(W):
+            if mp[x,y]:
+                if y+1<H and not mp[x,y+1]: px[x,y+1]=(60,14,8,255)
+                px[x,y]=(255,236,170,255)
+    outline(im,(30,10,6,255));up(im,4).save(O+'banner.png')
+banner()

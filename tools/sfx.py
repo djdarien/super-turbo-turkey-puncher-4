@@ -1,5 +1,5 @@
 import wave,struct,math,random
-random.seed(7);R=22050;O='./'
+random.seed(7);R=22050;O='public/play/'
 def save(n,s):
     w=wave.open(O+n,'w');w.setnchannels(1);w.setsampwidth(2);w.setframerate(R)
     w.writeframes(b''.join(struct.pack('<h',int(max(-1,min(1,v))*30000)) for v in s));w.close()
@@ -36,20 +36,24 @@ def welcome():
     # robotic 3-note fanfare + "power-up" chord
     return arp([262,330,392,523],.09)+[ .3*(math.sin(2*math.pi*523*i/R)+math.sin(2*math.pi*659*i/R)+math.sin(2*math.pi*784*i/R))/3*(1-i/(R*.6)) for i in range(int(R*.6))]
 def music():
-    bpm=132;b=60/bpm/2;out=[]
-    bass=[55,55,65.4,49]*2;mel=[440,523,587,659,587,523,440,392]
-    random.seed(3)
-    for bar in range(16):
-        root=bass[bar%8]
-        for st in range(8):
-            n=int(R*b)
-            for i in range(n):
-                t=i/R;e=math.exp(-t*8)
-                v=.35*((t*root*2)%1*2-1)*.8
-                if st%2==0: v+=.5*math.sin(2*math.pi*(60*math.exp(-t*30))*t)*math.exp(-t*20)  # kick
-                if st%4==2: v+=.25*random.uniform(-1,1)*math.exp(-t*25)  # snare
-                if bar>=4: v+=.15*(1 if (t*mel[(st+bar)%8])%1<.25 else -1)*e
-                out.append(v*.6)
+    # Original folksy waltz (3/4) in G major: 25% pulse lead, triangle bass, soft shaker.
+    def hz(n): return 440*2**((n-69)/12)
+    G,A,B,C,D,E,Fs=67,69,71,72,74,76,66
+    mel=[[D,B,G],[A,B,C],[B,G,D-12+12],[E,D,0],[C,E,G+12-12],[Fs,A,D],[G,B,D],[D,0,0],
+         [G,A,B],[C,B,A],[B,D,G],[E,C,A],[D,B,G],[A,Fs,D],[G,G,0],[0,0,0]]
+    bass=[43,48,43,48,48,50,43,50,43,48,43,45,43,50,43,43]
+    beat=60/112;out=[]
+    for rep in range(2):
+        for bar in range(16):
+            for bt in range(3):
+                n=int(R*beat);note=mel[bar][bt];bn=bass[bar] if bt==0 else bass[bar]+(7 if bt==1 else 12)
+                fl=hz(note) if note else 0;fb=hz(bn)
+                for i in range(n):
+                    t=i/R;v=0
+                    if fl: v+=.22*(1 if (t*fl)%1<.25 else -1)*math.exp(-t*2.2)*(1+.05*math.sin(2*math.pi*5*t))
+                    ph=(t*fb)%1;v+=.3*(4*abs(ph-.5)-1)*(1 if bt==0 else .6)*math.exp(-t*1.5)
+                    if t<.04: v+=.08*random.uniform(-1,1)*(1-t/.04)
+                    out.append(v)
     return out
 save('punch.wav',punch());save('gobble.wav',gobble())
 save('powerup_spawn.wav',sweep(300,1200,.25,'sin'));save('powerup_pickup.wav',arp([523,659,784,1047],.06))
