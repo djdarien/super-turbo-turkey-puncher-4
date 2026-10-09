@@ -15,6 +15,7 @@ Open `index.html` in a browser (pure static site, no build step).
 - Power-ups: Extra Points, Slow Time, Fast Time
 - Screen shake + feather particles
 - Responsive (desktop + mobile/touch)
+- 3 lives: a turkey not punched in time escapes and costs a life
 - Local high scores
 - Pause (Esc / P)
 

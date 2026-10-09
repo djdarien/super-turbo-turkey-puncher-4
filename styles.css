@@ -117,3 +117,8 @@ button:hover, button:active {
   text-decoration: underline;
   text-shadow: 2px 2px 0 #000;
 }
+
+#lives-display {
+  margin-top: 4px;
+  color: #f55;
+}

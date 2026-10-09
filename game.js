@@ -5,6 +5,7 @@
   const scoreEl = document.getElementById('score-display');
   const comboEl = document.getElementById('combo-display');
   const levelEl = document.getElementById('level-display');
+  const livesEl = document.getElementById('lives-display');
 
   // Assets
   const turkeyImg = new Image(); turkeyImg.src = 'turkey.png';
@@ -25,7 +26,7 @@
     spawn: new Audio('powerup_spawn.ogg'),
     pickup: new Audio('powerup_pickup.ogg')
   };
-  Object.values(sounds).forEach(a => { a.preload = 'auto'; a.volume = a.volume || 0.6; });
+  Object.entries(sounds).forEach(([k, a]) => { a.preload = 'auto'; a.volume = k === 'bg' ? 0.4 : 0.6; });
 
   // State
   let turkeys = [];
@@ -41,12 +42,25 @@
   let running = false;
   let paused = false;
   let fist = {x: 0, y: 0, w: 48, h: 48};
-  let highScores = JSON.parse(localStorage.getItem('sttp4_scores') || '[]');
+  let highScores = loadScores();
   let lastSpawn = 0;
   let powerSpawnTimer = 0;
   let animId = 0;
 
   const COMBO_MS = 2500;
+  const START_LIVES = 3;
+  let lives = START_LIVES;
+
+  function loadScores() {
+    try {
+      const data = JSON.parse(localStorage.getItem('sttp4_scores') || '[]');
+      if (!Array.isArray(data)) return [];
+      return data.filter(n => typeof n === 'number' && Number.isFinite(n) && n >= 0)
+        .map(Math.floor).sort((a, b) => b - a).slice(0, 8);
+    } catch (_) {
+      return [];
+    }
+  }
   const POWER_TYPES = ['extraPoints', 'slowTime', 'fastTime'];
 
   function resize() {
@@ -79,7 +93,9 @@
   function play(s) {
     try {
       const a = sounds[s];
-      if (a) { a.currentTime = 0; a.play().catch(() => {}); }
+      if (!a) return;
+      if (s === 'bg') { a.currentTime = 0; a.play().catch(() => {}); return; }
+      const c = a.cloneNode(); c.volume = a.volume; c.play().catch(() => {});
     } catch (_) {}
   }
 
@@ -96,7 +112,8 @@
       dy: (Math.random() < 0.5 ? -1 : 1) * speed,
       hp: 1 + Math.floor((level - 1) / 3),
       maxHp: 1 + Math.floor((level - 1) / 3),
-      hitFlash: 0
+      hitFlash: 0,
+      escape: Math.max(3500, 8000 - level * 400)
     });
     play('gobble');
   }
@@ -184,7 +201,7 @@
     if (nextLevel > level) {
       level = nextLevel;
       levelEl.textContent = 'Level ' + level;
-      for (let i = 0; i < 2; i++) spawnTurkey(true);
+      for (let i = 0; i < 2; i++) spawnTurkey();
     }
 
     // Combo decay
@@ -207,8 +224,19 @@
       if (t.y <= 0 || t.y + t.h >= canvas.height) t.dy *= -1;
       t.x = Math.max(0, Math.min(canvas.width - t.w, t.x));
       t.y = Math.max(0, Math.min(canvas.height - t.h, t.y));
-      if (t.hitFlash > 0) t.hitFlash--;
+      if (t.hitFlash > 0) t.hitFlash = Math.max(0, t.hitFlash - dt / 16);
+      t.escape -= dt * gameSpeed;
     });
+    for (let i = turkeys.length - 1; i >= 0; i--) {
+      if (turkeys[i].escape <= 0) {
+        turkeys.splice(i, 1);
+        lives--;
+        combo = 0;
+        shake = 12;
+        if (lives <= 0) { gameOver(); return; }
+        spawnTurkey(true);
+      }
+    }
 
     // Powerups lifetime
     for (let i = powerUps.length - 1; i >= 0; i--) {
@@ -224,18 +252,20 @@
     // Particles
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.15;
+      const k = dt / 16;
+      p.x += p.vx * k;
+      p.y += p.vy * k;
+      p.vy += 0.15 * k;
       p.life -= dt / 1000;
       if (p.life <= 0) particles.splice(i, 1);
     }
 
-    if (shake > 0) shake *= 0.85;
+    if (shake > 0) shake *= Math.pow(0.85, dt / 16);
 
     // HUD
     scoreEl.textContent = 'Score: ' + score;
     comboEl.textContent = combo > 1 ? `COMBO x${combo}` : '';
+    livesEl.textContent = 'Lives: ' + '\u2665'.repeat(Math.max(0, lives));
   }
 
   function draw() {
@@ -256,6 +286,7 @@
     turkeys.forEach(t => {
       ctx.save();
       if (t.hitFlash > 0) ctx.globalAlpha = 0.5 + Math.random() * 0.5;
+      else if (t.escape < 1500 && Math.floor(Date.now() / 120) % 2) ctx.globalAlpha = 0.45;
       if (turkeyImg.complete) {
         ctx.drawImage(turkeyImg, t.x, t.y, t.w, t.h);
       } else {
@@ -337,6 +368,7 @@
     score = 0;
     combo = 0;
     level = 1;
+    lives = START_LIVES;
     gameSpeed = 1;
     speedTimer = 0;
     powerSpawnTimer = 4000;
@@ -364,6 +396,7 @@
   }
 
   function returnToMenu() {
+    const wasRunning = running;
     running = false;
     paused = false;
     cancelAnimationFrame(animId);
@@ -373,7 +406,18 @@
     document.getElementById('pause-menu').style.display = 'none';
     document.getElementById('game-over').style.display = 'none';
     document.getElementById('main-menu').style.display = 'flex';
-    if (score > 0) saveScore(score);
+    if (wasRunning && score > 0) saveScore(score);
+  }
+
+  function gameOver() {
+    running = false;
+    paused = false;
+    cancelAnimationFrame(animId);
+    sounds.bg.pause();
+    hud.style.display = 'none';
+    saveScore(score);
+    document.getElementById('final-score').textContent = 'Final Score: ' + score;
+    document.getElementById('game-over').style.display = 'flex';
   }
 
   function saveScore(s) {
@@ -406,11 +450,10 @@
 
   // Keyboard
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' || e.key === 'p') {
+    if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') {
       if (running && !paused) pauseGame();
       else if (paused) resumeGame();
     }
-    if (e.key === 'Enter' && running) returnToMenu();
   });
 
   // Welcome on first interaction
