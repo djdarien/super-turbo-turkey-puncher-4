@@ -1,14 +1,12 @@
-# Super Turbo Turkey Puncher 4
+# Turkey Punch Turbo
 
-A robust, fun remake of the classic Doom 3 mini-game. Punch turkeys, chain combos, grab power-ups, climb the leaderboard.
+*(Working title — change it in `config.js`, `index.html` `<title>`, and `logo.png`.)*
+
+A gritty retro sci-fi arcade game: aim your gauntlet, punch the bouncing robo-turkeys, chain combos, grab power-ups, climb the leaderboard.
 
 ## Play
 
-**GitHub Pages:** After enabling Pages on this repo (Settings → Pages → Deploy from branch `main` / root), play at:
-
-`https://djdarien.github.io/super-turbo-turkey-puncher-4/`
-
-Or open `index.html` locally.
+Open `index.html` in a browser (pure static site, no build step).
 
 ## Features
 
@@ -26,13 +24,10 @@ Or open `index.html` locally.
 - Click / tap → punch
 - Esc or P → pause
 
-## Deploy
+## Support
 
-This is a pure static site. To publish via GitHub Pages:
+An optional extra tip link (PayPal) is shown on the title and game-over screens. It is purely optional and is not how the game is purchased.
 
-1. Repo Settings → Pages
-2. Source: Deploy from a branch
-3. Branch: `main` / `/ (root)`
-4. Save
+## Credits
 
-Assets stay relative — ready for any static host.
+See [CREDITS.md](CREDITS.md). All art and audio are original.

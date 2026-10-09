@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Super Turbo Turkey Puncher 4</title>
-  <meta name="description" content="Punch turkeys. Build combos. Beat high scores. Classic Doom mini-game reborn.">
+  <title>Turkey Punch Turbo</title>
+  <meta name="description" content="Punch turkeys. Build combos. Beat high scores. A retro sci-fi arcade brawler.">
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="main-menu">
-    <img src="logo.png" alt="Super Turbo Turkey Puncher 4" class="logo">
+    <img src="logo.png" alt="Turkey Punch Turbo" class="logo">
     <p class="tagline">PUNCH THE TURKEY</p>
     <button id="start-btn">Start Game</button>
     <button id="scores-btn">High Scores</button>
+    <a class="tip-link" target="_blank" rel="noopener" href="https://www.paypal.com/paypalme/djdarien">Enjoying it? Leave an optional extra tip</a>
   </div>
   
   <canvas id="gameCanvas"></canvas>
@@ -41,8 +42,15 @@
     <p id="final-score"></p>
     <button id="restart-btn">Play Again</button>
     <button id="menu-btn2">Main Menu</button>
+    <a class="tip-link" target="_blank" rel="noopener" href="https://www.paypal.com/paypalme/djdarien">Enjoying it? Leave an optional extra tip</a>
   </div>
 
+  <script src="config.js"></script>
+  <script>
+    (function(c){document.title=c.title;var l=document.querySelector(".logo");if(l)l.alt=c.title;
+     document.querySelector(".tagline").textContent=c.tagline;
+     document.querySelectorAll(".tip-link").forEach(function(a){a.href=c.tipUrl;a.textContent=c.tipText;});})(window.GAME_CONFIG);
+  </script>
   <script src="game.js"></script>
 </body>
 </html>

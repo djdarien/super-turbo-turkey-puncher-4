@@ -18,12 +18,12 @@
 
   // Audio (graceful fail)
   const sounds = {
-    gobble: new Audio('gobble.mp3'),
-    punch: new Audio('punch.mp3'),
-    welcome: new Audio('welcome_message.mp3'),
-    bg: Object.assign(new Audio('background_music.mp3'), {loop: true, volume: 0.4}),
-    spawn: new Audio('powerup_spawn.mp3'),
-    pickup: new Audio('powerup_pickup.mp3')
+    gobble: new Audio('gobble.ogg'),
+    punch: new Audio('punch.ogg'),
+    welcome: new Audio('welcome_message.ogg'),
+    bg: Object.assign(new Audio('background_music.ogg'), {loop: true, volume: 0.4}),
+    spawn: new Audio('powerup_spawn.ogg'),
+    pickup: new Audio('powerup_pickup.ogg')
   };
   Object.values(sounds).forEach(a => { a.preload = 'auto'; a.volume = a.volume || 0.6; });
 

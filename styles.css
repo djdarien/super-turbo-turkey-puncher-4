@@ -109,3 +109,11 @@ button:hover, button:active {
 #high-score-list li {
   margin: 0.4rem 0;
 }
+
+.tip-link {
+  font-size: 0.6rem;
+  color: #0ff;
+  margin-top: 0.6rem;
+  text-decoration: underline;
+  text-shadow: 2px 2px 0 #000;
+}
