@@ -1,8 +1,8 @@
-# Turkey Punch Turbo
+# Super Turbo Turkey Puncher 4
 
-*(Working title — change it in `config.js`, `index.html` `<title>`, and `logo.png`.)*
+*(To rename: edit `config.js`, the `<title>`/meta in `index.html`, and the logo text in `tools/art.py`.)*
 
-A gritty retro sci-fi arcade game: aim your gauntlet, punch the bouncing robo-turkeys, chain combos, grab power-ups, climb the leaderboard.
+A gritty retro autumn arcade game: aim your glove, punch the bouncing turkeys, chain combos, grab power-ups, climb the leaderboard.
 
 ## Play
 
