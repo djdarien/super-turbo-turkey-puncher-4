@@ -19,13 +19,22 @@
   };
 
   // Audio (graceful fail)
+  // Safari/iOS can't play Ogg Vorbis: pick .ogg where supported, else .mp3.
+  const AUDIO_EXT = (() => {
+    try {
+      const t = document.createElement('audio');
+      if (t.canPlayType && t.canPlayType('audio/ogg; codecs="vorbis"')) return 'ogg';
+    } catch (_) {}
+    return 'mp3';
+  })();
+  const snd = name => new Audio(name + '.' + AUDIO_EXT);
   const sounds = {
-    gobble: new Audio('gobble.ogg'),
-    punch: new Audio('punch.ogg'),
-    welcome: new Audio('welcome_message.ogg'),
-    bg: Object.assign(new Audio('background_music.ogg'), {loop: true, volume: 0.4}),
-    spawn: new Audio('powerup_spawn.ogg'),
-    pickup: new Audio('powerup_pickup.ogg')
+    gobble: snd('gobble'),
+    punch: snd('punch'),
+    welcome: snd('welcome_message'),
+    bg: Object.assign(snd('background_music'), {loop: true, volume: 0.4}),
+    spawn: snd('powerup_spawn'),
+    pickup: snd('powerup_pickup')
   };
   Object.entries(sounds).forEach(([k, a]) => { a.preload = 'auto'; a.volume = k === 'bg' ? 0.4 : 0.6; });
 
@@ -75,9 +84,19 @@
     'No leftovers for you this year.'
   ];
 
+  // Background: cover-scaled (aspect kept), anchored to the bottom edge.
+  // The harvest table/cornucopia occupy the bottom ~28% of the art, so the
+  // play area stops at the table top.
+  const BG_W = 1024, BG_H = 800, BG_TABLE_TOP = 0.72;
+  let bgRect = {x: 0, y: 0, w: 0, h: 0};
+  let playBottom = 0;
   function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    const sc = Math.max(canvas.width / BG_W, canvas.height / BG_H);
+    const w = BG_W * sc, h = BG_H * sc;
+    bgRect = {x: (canvas.width - w) / 2, y: canvas.height - h, w, h};
+    playBottom = Math.max(canvas.height * 0.55, bgRect.y + h * BG_TABLE_TOP);
   }
   window.addEventListener('resize', resize);
   resize();
@@ -118,7 +137,7 @@
     const speed = (1.2 + level * 0.15) * (0.8 + Math.random() * 0.4);
     turkeys.push({
       x: Math.random() * (canvas.width - size),
-      y: Math.random() * (canvas.height - size),
+      y: 40 + Math.random() * Math.max(0, playBottom - size - 40),
       w: size, h: size,
       dx: (Math.random() < 0.5 ? -1 : 1) * speed,
       dy: (Math.random() < 0.5 ? -1 : 1) * speed,
@@ -135,7 +154,7 @@
     powerUps.push({
       type: t,
       x: 40 + Math.random() * (canvas.width - 80),
-      y: 40 + Math.random() * (canvas.height - 80),
+      y: 40 + Math.random() * Math.max(0, playBottom - 100),
       w: 36, h: 36,
       life: 8 + Math.random() * 4
     });
@@ -236,9 +255,9 @@
       t.x += t.dx * gameSpeed * (dt / 16);
       t.y += t.dy * gameSpeed * (dt / 16);
       if (t.x <= 0 || t.x + t.w >= canvas.width) t.dx *= -1;
-      if (t.y <= 0 || t.y + t.h >= canvas.height) t.dy *= -1;
+      if (t.y <= 0 || t.y + t.h >= playBottom) t.dy *= -1;
       t.x = Math.max(0, Math.min(canvas.width - t.w, t.x));
-      t.y = Math.max(0, Math.min(canvas.height - t.h, t.y));
+      t.y = Math.max(0, Math.min(playBottom - t.h, t.y));
       if (t.hitFlash > 0) t.hitFlash = Math.max(0, t.hitFlash - dt / 16);
       t.escape -= dt * gameSpeed;
     });
@@ -286,7 +305,17 @@
     // HUD
     scoreEl.textContent = 'Score: ' + score;
     comboEl.textContent = combo > 1 ? `COMBO x${combo}` : '';
-    livesEl.textContent = 'Lives: ' + '\u2665'.repeat(Math.max(0, lives));
+    renderLives();
+  }
+
+  let shownLives = -1;
+  function renderLives() {
+    if (shownLives === lives) return;
+    shownLives = lives;
+    const n = Math.max(0, lives);
+    livesEl.setAttribute('aria-label', 'Lives: ' + n);
+    livesEl.innerHTML = '<span class="lives-label">LIVES</span>' +
+      '<span class="heart"></span>'.repeat(n);
   }
 
   function draw() {
@@ -297,7 +326,7 @@
 
     // BG
     if (bgImg.complete) {
-      ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(bgImg, bgRect.x, bgRect.y, bgRect.w, bgRect.h);
     } else {
       ctx.fillStyle = '#1a0a00';
       ctx.fillRect(0, 0, canvas.width, canvas.height);

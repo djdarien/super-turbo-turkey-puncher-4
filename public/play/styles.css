@@ -136,3 +136,24 @@ button:hover, button:active {
   max-width: 90%;
   line-height: 1.6;
 }
+
+/* Life hearts: pixel-art sprite instead of a tiny font glyph */
+#lives-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+#lives-display .lives-label { margin-right: 4px; }
+#lives-display .heart {
+  width: 22px;
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 10' shape-rendering='crispEdges'%3E%3Cpath fill='%23000' d='M1 0h3v1h1v1h1V1h1V0h3v1h1v4h-1v1h-1v1h-1v1h-1v1h-1v1H5V9H4V8H3V7H2V6H1V5H0V1h1z'/%3E%3Cpath fill='%23e22' d='M1 1h3v1h1v1h1V2h1V1h3v4H9v1H8v1H7v1H6v1H5V8H4V7H3V6H2V5H1z'/%3E%3Cpath fill='%23fff' d='M2 2h1v1H2z'/%3E%3C/svg%3E") no-repeat center/contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(1px 1px 0 rgba(0,0,0,.6));
+}
+@media (max-width: 480px) {
+  #hud { font-size: 0.6rem !important; }
+  #lives-display .heart { width: 18px; height: 16px; }
+}
