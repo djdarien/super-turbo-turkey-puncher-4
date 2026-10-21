@@ -1,38 +1,29 @@
 # Super Turbo Turkey Puncher 4
 
-A robust, fun remake of the classic Doom 3 mini-game. Punch turkeys, chain combos, grab power-ups, climb the leaderboard.
+A clean recreation of the classic Doom 3 arcade mini-game. One turkey at a time. Punch it until it falls. Score higher with faster timing. Background music loops after you start.
 
 ## Play
 
-**GitHub Pages:** After enabling Pages on this repo (Settings → Pages → Deploy from branch `main` / root), play at:
+Enable GitHub Pages (Settings → Pages → Deploy from branch `main` / root) then open:
 
-`https://djdarien.github.io/super-turbo-turkey-puncher-4/`
+https://djdarien.github.io/super-turbo-turkey-puncher-4/
 
 Or open `index.html` locally.
 
-## Features
+## How it plays (closer to original Doom 3)
 
-- Moving turkeys with increasing difficulty & HP
-- Combo system with score multipliers
-- Power-ups: Extra Points, Slow Time, Fast Time
-- Screen shake + feather particles
-- Responsive (desktop + mobile/touch)
-- Local high scores
-- Pause (Esc / P)
+- Single turkey appears in the center (falls in with a gobble).
+- Click / tap to punch. Faster consecutive punches score more.
+- Turkey takes multiple hits (more as score rises). When it dies, a new one drops in.
+- Combo builds on quick punches and fades if you pause.
+- Background music starts when you press Start and keeps looping.
+- High scores saved locally.
+- Pause with Esc or P.
 
-## Controls
+## Assets
 
-- Move mouse / finger → aim fist
-- Click / tap → punch
-- Esc or P → pause
+Uses the existing images and sounds already in this repo (`turkey.png`, `fist.png`, `background.png`, `background_music.mp3`, `gobble.mp3`, `punch.mp3`, etc.). Music is the same track that worked previously.
 
 ## Deploy
 
-This is a pure static site. To publish via GitHub Pages:
-
-1. Repo Settings → Pages
-2. Source: Deploy from a branch
-3. Branch: `main` / `/ (root)`
-4. Save
-
-Assets stay relative — ready for any static host.
+Static site. Relative paths only. Ready for GitHub Pages or any static host.
